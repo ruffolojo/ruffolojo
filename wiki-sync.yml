@@ -1,0 +1,37 @@
+name: Sync Wiki
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-wiki:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main repository
+        uses: actions/checkout@v3
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+
+      - name: Unzip wiki archive
+        run: |
+          unzip SecretServer_Bible_Wiki_With_Sidebar.zip -d wiki
+
+      - name: Clone GitHub Wiki repository
+        run: |
+          git clone https://github.com/ruffolojo/reporting.wiki.git wiki-repo
+
+      - name: Copy wiki files
+        run: |
+          cp -r wiki/* wiki-repo/
+
+      - name: Commit and push changes to Wiki
+        run: |
+          cd wiki-repo
+          git add .
+          git commit -m "Automated wiki update from main repo"
+          git push
